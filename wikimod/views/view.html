@@ -1,0 +1,15 @@
+{{define "view"}}
+<html>
+<head>
+<title>{{.Title}}</title>
+</head>
+<body>
+    <h1>Viewing {{.Title}}</h1>
+    <div>
+        <pre>
+            {{printf "%s" .Body}}
+        </pre>
+    </div>
+</body>
+</html>
+{{end}}
