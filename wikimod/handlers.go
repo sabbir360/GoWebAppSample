@@ -12,10 +12,10 @@ import (
 // 	getTemplatePath("view"), getTemplatePath("css")))
 
 var templates = template.Must(template.ParseGlob("./wikimod/views/*.html"))
-var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9/-]+)$")
 var wikiConfig = func() WikiConfig {
 	//TODO:: Implement a method to read config from a config file.
-	return WikiConfig{CDN: "http://172.17.0.2/"}
+	return WikiConfig{CDN: "http://localhost:5003/"}
 }()
 
 func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
@@ -46,7 +46,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	// t, err := template.ParseFiles(getTemplatePath(tmpl))
 	p.Config = wikiConfig
 	err := templates.ExecuteTemplate(w, tmpl, p)
-
+	fmt.Println("Template loaded...")
 	if err != nil {
 		// WikiTemplate(w, p.Title, []byte(err.Error()))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -88,12 +88,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 //ViewHandler The view page
 func ViewHandler(w http.ResponseWriter, r *http.Request, title string) {
-
+	fmt.Println("view...")
 	p, err := LoadPage(title)
 	if err != nil {
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
 	}
+	fmt.Println("page loaded...")
 	// fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 	// WikiTemplate(w, p.Title, p.Body)
 	renderTemplate(w, "view", p)
